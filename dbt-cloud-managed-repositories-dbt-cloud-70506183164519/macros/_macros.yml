@@ -1,0 +1,11 @@
+# macros/_macros.yml
+
+version: 2
+
+macros:
+  - name: format_order_date
+    description: "Formatiert Zeitstempel auf Tagesebene mittels DATE_TRUNC."
+    arguments:
+      - name: order_date_column
+        type: string
+        description: "Der Spaltenname der Datums- oder Timestamp-Spalte."

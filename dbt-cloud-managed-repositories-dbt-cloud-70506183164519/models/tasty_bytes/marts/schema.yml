@@ -1,0 +1,36 @@
+version: 2
+models:
+- name: daily_orders
+  description: 'Fakten-Tabelle: Tägliche Übersicht aller Bestellungen.'
+  columns:
+  - name: order_id
+    description: Eindeutige ID der Bestellung.
+    data_tests:
+    - not_null
+  - name: customer_id
+    description: ID des Kunden.
+    data_tests:
+    - not_null
+  - name: order_day
+    description: Das Bestelldatum (abgeschnitten auf Tagesebene).
+    data_tests:
+    - not_null
+  - name: total_price
+    description: Gesamtbetrag der Bestellung.
+- name: monthly_orders
+  description: 'Fakten-Tabelle: Aggregierte monatliche Kennzahlen pro Kunde.'
+  columns:
+  - name: order_month
+    description: Der erste Tag des jeweiligen Monats.
+    data_tests:
+    - not_null
+  - name: customer_id
+    description: ID des Kunden.
+    data_tests:
+    - not_null
+  - name: total_price
+    description: Summe des generierten Umsatzes im Monat.
+  - name: total_quantity
+    description: Gesamtanzahl gekaufter Artikel im Monat.
+  - name: total_orders
+    description: Anzahl getätigter Bestellungen im Monat.

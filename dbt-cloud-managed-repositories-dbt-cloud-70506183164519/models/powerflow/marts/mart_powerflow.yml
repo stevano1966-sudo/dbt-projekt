@@ -1,0 +1,13 @@
+version: 2
+models:
+- name: roi
+  description: Das finale Mart-Modell, das die Umsatzlebenszyklen (LTV) direkt den Marketingkosten gegenüberstellt.
+  columns:
+  - name: attribution_cost
+    description: Die akkumulierten Akquisitionskosten für die Akquise dieses Nutzers.
+    data_tests:
+    - not_null
+  - name: roi
+    description: Der berechnete Return on Investment (Umsatz dividiert durch Akquisitionskosten via DIV0).
+    data_tests:
+    - not_null

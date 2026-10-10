@@ -1,0 +1,92 @@
+# Dateiname: dbt_project.yml
+# dbt_project.yml
+# =========================================================================
+# dbt & Snowflake Analytics Engineering
+# Projekt: Silver Screen - Movie Theater Monthly Performance Pipeline
+# Snowflake · dbt Cloud
+# Ersteller: Milomir Stevanovic
+# Datum: 06.10.2026
+# Änderung: 06.10.2026 - +schema auf Projektebene entfernt, damit das Makro
+#                        generate_schema_name über node.fqn auf
+#                        BRONZE / SILVER / GOLD verteilen kann
+# =========================================================================
+
+name: 'silver_screen'
+version: '1.0.0'
+config-version: 2
+
+# Profilname: muss mit dem Profil in dbt Cloud / profiles.yml übereinstimmen
+profile: 'default'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# -------------------------------------------------------------------------
+# Modell-Konfiguration
+# Wichtig: KEIN +schema setzen. Dann ist custom_schema_name im Makro leer und
+# die Zuordnung erfolgt über den Ordnernamen:
+#   staging      -> BRONZE (DEV_BRONZE / PROD_BRONZE)
+#   intermediate -> SILVER (DEV_SILVER / PROD_SILVER)
+#   marts        -> GOLD   (DEV_GOLD   / PROD_GOLD)
+# Die Ordnernamen unter models/ müssen exakt so heißen.
+# -------------------------------------------------------------------------
+models:
+  silver_screen:            # Projektname (name: oben)
+    silver_screen:          # Unterordner models/silver_screen/
+      staging:
+        +schema: bronze
+        +materialized: view
+      intermediate:
+        +schema: silver
+        +materialized: view
+      marts:
+        +schema: gold
+        +materialized: table
+
+    tasty_bytes:
+      +database: TASTY_BYTES_SAMPLE_DATA
+      staging:
+        +schema: bronze
+        +materialized: view
+      marts:
+        +schema: gold
+        +materialized: table
+
+    lesson_db:
+      +database: LESSON_DB
+      staging:
+        +schema: bronze
+        +materialized: view
+      intermediate:
+        +schema: silver
+        +materialized: view
+      marts:
+        +schema: gold
+        +materialized: table
+
+    powerflow:
+      +database: POWERFLOW
+      staging:
+        +schema: bronze
+        +materialized: view
+      intermediate:
+        +schema: silver
+        +materialized: view
+      marts:
+        +schema: gold
+        +materialized: table
+        
+        
+seeds:
+  silver_screen:
+    powerflow:
+      +database: POWERFLOW
+      +schema: bronze    

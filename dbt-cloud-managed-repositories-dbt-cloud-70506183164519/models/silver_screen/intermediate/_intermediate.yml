@@ -1,0 +1,33 @@
+# Dateiname: _intermediate.yml
+# models/silver_screen/intermediate/_intermediate.yml
+# =========================================================================
+# dbt & Snowflake Analytics Engineering
+# Projekt: Silver Screen - Movie Theater Monthly Performance Pipeline
+# Snowflake · dbt Cloud
+# Ersteller: Milomir Stevanovic
+# Datum: 29.09.2026
+# =========================================================================
+
+version: 2
+
+models:
+  - name: int_monthly_sales_by_location
+    description: "Ticketverkäufe und Umsatz pro Film, Monat und Standort."
+    data_tests:
+         - dbt_utils.unique_combination_of_columns:
+             arguments:
+               combination_of_columns:
+                 - movie_id
+                 - month
+                 - location_id
+    columns:
+      - name: month
+        description: '{{ doc("month") }}'
+      - name: movie_id
+        description: '{{ doc("movie_id") }}'
+      - name: location_id
+        description: '{{ doc("location_id") }}'
+      - name: tickets_sold
+        description: '{{ doc("tickets_sold") }}'
+      - name: revenue
+        description: '{{ doc("revenue") }}'

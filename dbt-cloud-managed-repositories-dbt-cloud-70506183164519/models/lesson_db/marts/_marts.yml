@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: fct_leases_monthly
+    description: "Monatliche Aggregation von Leasing-Metriken, Conversions und Marketing-KPIs pro Kanal."
+    columns:
+      - name: month
+        description: "Erster Tag des jeweiligen Monats."
+        tests:
+          - not_null
+
+      - name: channel_type
+        description: "Typ des Marketing-Kanals (z.B. Organic, Paid)."
+        tests:
+          - not_null
+
+      - name: sessions
+        description: "Anzahl eindeutiger Sessions."
+
+      - name: users
+        description: "Anzahl eindeutiger Nutzer."
+
+      - name: conversions
+        description: "Anzahl generierter Leasing-Verträge."
+
+      - name: total_costs
+        description: "Gesamte Marketingkosten in der Periode."
+
+      - name: total_revenue
+        description: "Generierter Brutto-Umsatz aus Conversions."
+
+      - name: avg_days_to_contract
+        description: "Durchschnittliche Tage von der Session bis zum Vertrag."
+
+      - name: avg_sessions_per_user
+        description: "Durchschnittliche Anzahl an Sessions pro Nutzer."
+
+      - name: conversion_rate_pct
+        description: "Conversion Rate in Prozent (Conversions / Sessions * 100)."
+
+      - name: roas
+        description: "Return on Ad Spend (Umsatz / Kosten)."

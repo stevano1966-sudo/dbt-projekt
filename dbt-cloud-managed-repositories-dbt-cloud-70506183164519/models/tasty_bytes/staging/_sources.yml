@@ -1,0 +1,13 @@
+version: 2
+sources:
+- name: raw_pos
+  database: TASTY_BYTES_SAMPLE_DATA
+  schema: RAW_POS
+  tables:
+  - name: menu
+  - name: order_header
+    columns:
+    - name: order_id
+      data_tests:
+      - not_null
+      - unique

@@ -1,0 +1,10 @@
+version: 2
+sources:
+- name: lesson
+  database: lesson_db
+  schema: raw
+  tables:
+  - name: channel_code
+  - name: raw_ads_benchmark
+  - name: raw_leases_month
+  - name: raw_sessions

@@ -1,0 +1,32 @@
+version: 2
+models:
+- name: stg_orders
+  description: Aufbereitete Bestellungen aus dem POS-System. Staging model extracting day-of-week, revenue, and order count for 1995.
+  columns:
+  - name: order_id
+    description: Eindeutige Primärschlüssel-ID der Bestellung.
+    data_tests:
+    - not_null
+    - unique
+  - name: day_of_week
+    description: Numeric representation of the day of the week (0 for Sunday, 6 for Saturday).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+    - not_null
+  - name: total_revenue
+    description: Total revenue generated on a given day.
+    data_tests:
+    - not_null
+  - name: total_quantity
+    description: Total quantity of items ordered on a given day.
+    data_tests:
+    - not_null

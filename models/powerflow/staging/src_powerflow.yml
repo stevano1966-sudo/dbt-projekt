@@ -1,0 +1,15 @@
+version: 2
+sources:
+- name: powerflow
+  description: Rohdaten-Quellen für das PowerFlow Marketing- und ROI-Projekt
+  database: powerflow
+  schema: public
+  tables:
+  - name: appsflyer_raw
+    description: Rohdaten zur Nutzerakquise und Kosten von AppsFlyer
+  - name: google_ads
+    description: Rohdaten zur Nutzerakquise aus Google Ads Kampagnen
+  - name: registrations_raw
+    description: Rohdaten der Nutzerregistrierungen aus der App (enthält noch NULLs)
+  - name: transactions
+    description: Rohdaten der In-App-Käufe und Umsätze für die LTV-Berechnung

@@ -1,0 +1,79 @@
+# Dateiname: _marts.yml
+# models/silver_screen/marts/_marts.yml
+# =========================================================================
+# dbt & Snowflake Analytics Engineering
+# Projekt: Silver Screen - Movie Theater Monthly Performance Pipeline
+# Snowflake · dbt Cloud
+# Ersteller: Milomir Stevanovic
+# Datum: 29.09.2026
+# Änderung: 29.09.2026 - Spalte has_rental_invoice ergänzt
+# Änderung: 01.10.2026 - Spaltentests ergänzt (not_null, relationships)
+# =========================================================================
+# Aufbau pro Modell (Reihenfolge und Einrückung beachten):
+#   - name / description / data_tests / columns stehen auf derselben Ebene
+#   - data_tests auf Modellebene prüft mehrere Spalten zusammen
+#   - columns enthält nur Spalten, jede beginnt mit "- name:"
+# =========================================================================
+
+version: 2
+
+models:
+  - name: fct_monthly_movie_performance
+    description: "Monatliche Kennzahlen pro Film und Standort."
+    data_tests:
+      # Detailgrad des Modells: eine Zeile pro Film, Monat und Standort.
+      # Erkennt versehentlich vervielfachte Zeilen, etwa durch Dubletten
+      # in den vorgelagerten Modellen.
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - month
+              - location
+              - movie_id
+    columns:
+      # Die drei Schlüsselspalten des Detailgrads dürfen nie leer sein.
+      - name: month
+        description: '{{ doc("month") }}'
+        data_tests:
+          - not_null
+      - name: location
+        description: '{{ doc("location") }}'
+        data_tests:
+          - not_null
+      - name: movie_id
+        description: '{{ doc("movie_id") }}'
+        data_tests:
+          - not_null
+          # Fremdschlüssel: Jeder Film im Fakt-Modell muss im Filmkatalog
+          # existieren.
+          - relationships:
+              arguments:
+                to: ref('stg_movie_catalogue')
+                field: movie_id
+      - name: movie_title
+        description: '{{ doc("movie_title") }}'
+      - name: genre
+        description: '{{ doc("genre") }}'
+      - name: studio
+        description: '{{ doc("studio") }}'
+      - name: tickets_sold
+        description: '{{ doc("tickets_sold") }}'
+        data_tests:
+          - not_null
+      - name: ticket_revenue
+        description: "Umsatz aus Ticketverkäufen im Monat."
+        data_tests:
+          - not_null
+      - name: rental_cost
+        description: '{{ doc("rental_cost") }}'
+        data_tests:
+          # Fehlende Rechnungen werden als 0 gerechnet, daher nie NULL.
+          - not_null
+      - name: has_rental_invoice
+        description: "TRUE, wenn für Film, Monat und Standort eine Rechnung vorliegt. FALSE bedeutet: Leihkosten fehlen (rental_cost = 0), net_profit ist dann zu hoch."
+        data_tests:
+          - not_null
+      - name: net_profit
+        description: "Nettogewinn: Ticketumsatz abzüglich Leihkosten. Fehlen Leihkosten zu einem Film (has_rental_invoice = FALSE), werden sie als 0 gerechnet."
+        data_tests:
+          - not_null

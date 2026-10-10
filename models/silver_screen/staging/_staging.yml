@@ -1,0 +1,191 @@
+# Dateiname: _staging.yml
+# models/silver_screen/staging/_staging.yml
+# =========================================================================
+# dbt & Snowflake Analytics Engineering
+# Projekt: Silver Screen - Movie Theater Monthly Performance Pipeline
+# Snowflake · dbt Cloud
+# Ersteller: Milomir Stevanovic
+# Datum: 29.09.2026
+# =========================================================================
+# Aufbau dieser Datei:
+#   - description : Doku-Text, erscheint in dbt docs
+#   - data_tests  : automatische Qualitätsprüfungen, laufen mit "dbt test"
+#                   bzw. "dbt build". Modell-Ebene = Prüfung über mehrere
+#                   Spalten, Spalten-Ebene = Prüfung für eine Spalte.
+# Test-Arten:
+#   not_null      : Spalte darf keine leeren Werte (NULL) enthalten
+#   unique        : jeder Wert darf nur einmal vorkommen
+#   unique_combination_of_columns (dbt_utils):
+#                 : die Kombination mehrerer Spalten muss eindeutig sein
+#   relationships : jeder Wert muss auch in einer anderen Tabelle existieren
+#                   (Fremdschlüssel-Prüfung)
+# =========================================================================
+
+version: 2
+
+models:
+  # -----------------------------------------------------------------------
+  # stg_invoices: Rechnungen der Filmverleiher
+  # -----------------------------------------------------------------------
+  - name: stg_invoices
+    description: "Bereinigte Rechnungen der Filmverleiher mit Leihkosten pro Film, Monat und Standort. Mehrfach erfasste Rechnungen werden entfernt, sodass pro Film, Monat und Standort genau eine Rechnung bleibt."
+    data_tests:
+      # Detailgrad: eine Rechnung pro Film, Monat und Standort.
+      # In den Rohdaten gab es Mehrfach-Rechnungen; diese werden im Modell
+      # bereinigt, weil sie sonst im Fakt-Modell Zeilen vervielfachen.
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - movie_id
+              - month
+              - location
+    columns:
+      - name: invoice_id
+        description: "Rechnungs-ID. Nicht allein eindeutig, erst gemeinsam mit movie_id."
+        data_tests:
+          # Kein 'unique' hier (siehe Kommentar oben), nur Pflichtfeld-Prüfung.
+          - not_null
+      - name: movie_id
+        description: '{{ doc("movie_id") }}'
+        data_tests:
+          - not_null
+          # Fremdschlüssel: Jede Film-ID aus den Rechnungen muss im Filmkatalog
+          # existieren. Findet der Test Fehler, gibt es Rechnungen für Filme,
+          # die im Katalog fehlen. NULL-Werte ignoriert dieser Test, dafür ist
+          # das not_null darüber zuständig.
+          - relationships:
+              arguments:
+                to: ref('stg_movie_catalogue')
+                field: movie_id
+      - name: month
+        description: '{{ doc("month") }}'
+      - name: location
+        description: '{{ doc("location") }}'
+      - name: studio
+        description: '{{ doc("studio") }}'
+      - name: release_date
+        description: '{{ doc("release_date") }}'
+      - name: weekly_price
+        description: "Leihpreis pro Woche laut Rechnung."
+      - name: rental_cost
+        description: '{{ doc("rental_cost") }}'
+
+  # -----------------------------------------------------------------------
+  # stg_location_sales: Verkaufsdaten aller Standorte (Union nj_001 bis nj_003)
+  # -----------------------------------------------------------------------
+  - name: stg_location_sales
+    description: "Vereinigte Einzelverkäufe aller Standorte (nj_001 bis nj_003) auf Transaktions- bzw. Verkaufsebene; wird erst im Intermediate-Modell auf Monate verdichtet."
+    
+    columns:
+      - name: movie_id
+        description: '{{ doc("movie_id") }}'
+        data_tests:
+          - not_null
+      - name: month
+        description: '{{ doc("month") }}'
+        data_tests:
+          - not_null
+      - name: location_id
+        description: '{{ doc("location_id") }}'
+        data_tests:
+          - not_null
+      - name: tickets_sold
+        description: '{{ doc("tickets_sold") }}'
+        data_tests:
+          - not_null
+      - name: revenue
+        description: '{{ doc("revenue") }}'
+        data_tests:
+          - not_null
+
+  # -----------------------------------------------------------------------
+  # stg_movie_catalogue: Filmstammdaten
+  # -----------------------------------------------------------------------
+  - name: stg_movie_catalogue
+    description: "Filmkatalog mit Stammdaten zu jedem Film."
+    columns:
+      - name: movie_id
+        description: '{{ doc("movie_id") }}'
+        data_tests:
+          # Schlüssel des Katalogs: jeder Film genau einmal und immer gefüllt.
+          # Voraussetzung dafür, dass der relationships-Test in stg_invoices
+          # sinnvoll auf diese Spalte verweisen kann.
+          - unique
+          - not_null
+      - name: movie_title
+        description: '{{ doc("movie_title") }}'
+      - name: release_date
+        description: '{{ doc("release_date") }}'
+      - name: genre
+        description: '{{ doc("genre") }}'
+      - name: country
+        description: "Produktionsland des Films."
+      - name: studio
+        description: '{{ doc("studio") }}'
+      - name: budget
+        description: "Produktionsbudget des Films als Text mit Dollarzeichen (z. B. $200,000,000)."
+      - name: director
+        description: "Regisseur des Films."
+      - name: rating
+        description: "Altersfreigabe des Films (z. B. PG, PG-13, R); kann leer sein."
+      - name: minutes
+        description: "Laufzeit des Films in Minuten."
+
+  # -----------------------------------------------------------------------
+  # stg_nj_001 bis stg_nj_003: Verkaufsdaten je Standort
+  # -----------------------------------------------------------------------
+  - name: stg_nj_001
+    description: "Verkaufsdaten Standort nj_001 auf Transaktionsebene."
+    columns:
+      - name: transaction_id
+        description: '{{ doc("transaction_id") }}'
+      - name: movie_id
+        description: '{{ doc("movie_id") }}'
+      - name: month
+        description: '{{ doc("month") }}'
+      - name: location
+        description: "Standort; in diesem Modell fest auf 'NJ_001' gesetzt."
+      - name: tickets_sold
+        description: '{{ doc("tickets_sold") }}'
+      - name: ticket_price
+        description: '{{ doc("ticket_price") }}'
+      - name: revenue
+        description: '{{ doc("revenue") }}'
+      - name: is_discounted
+        description: "Kennzeichen, ob die Transaktion mit Rabatt erfolgte (TRUE/FALSE)."
+      - name: is_3d
+        description: "Kennzeichen, ob es sich um eine 3D-Vorstellung handelte (TRUE/FALSE)."
+
+  - name: stg_nj_002
+    description: "Verkaufsdaten Standort nj_002, bereinigt und auf Monatsebene."
+    columns:
+      - name: movie_id
+        description: '{{ doc("movie_id") }}'
+      - name: month
+        description: '{{ doc("month") }}'
+      - name: location
+        description: '{{ doc("location") }}'
+      - name: tickets_sold
+        description: '{{ doc("tickets_sold") }}'
+      - name: ticket_price
+        description: '{{ doc("ticket_price") }}'
+      - name: revenue
+        description: '{{ doc("revenue") }}'
+
+  - name: stg_nj_003
+    description: "Verkaufsdaten Standort nj_003 auf Transaktionsebene."
+    columns:
+      - name: transaction_id
+        description: '{{ doc("transaction_id") }}'
+      - name: movie_id
+        description: '{{ doc("movie_id") }}'
+      - name: month
+        description: '{{ doc("month") }}'
+      - name: location
+        description: '{{ doc("location") }}'
+      - name: tickets_sold
+        description: '{{ doc("tickets_sold") }}'
+      - name: ticket_price
+        description: '{{ doc("ticket_price") }}'
+      - name: revenue
+        description: '{{ doc("revenue") }}'

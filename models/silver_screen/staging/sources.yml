@@ -1,0 +1,27 @@
+# Dateiname: sources.yml
+# models/silver_screen/staging/sources.yml
+# =========================================================================
+# dbt & Snowflake Analytics Engineering
+# Projekt: Silver Screen - Movie Theater Monthly Performance Pipeline
+# Snowflake · dbt Cloud
+# Ersteller: Milomir Stevanovic
+# Datum: 28.09.2026
+# =========================================================================
+
+version: 2
+
+sources:
+  - name: raw_silver_screen
+    database: SILVER_SCREEN_DB
+    schema: RAW
+    tables:
+      - name: movie_catalogue
+        description: "Stammdaten der verfügbaren Filme im Jahr 2024."
+      - name: invoices
+        description: "Rechnungsdaten der Filmverleiher zu den Leihkosten pro Film, Monat und Standort."
+      - name: nj_001
+        description: "Transaktionsdaten von Standort 1 (NJ_001)."
+      - name: nj_002
+        description: "Täglich aggregierte Verkaufsdaten von Standort 2 (NJ_002)."
+      - name: nj_003
+        description: "Einzelne Produktkäufe von Standort 3 (NJ_003), u. a. Tickets, Snacks und Getränke."

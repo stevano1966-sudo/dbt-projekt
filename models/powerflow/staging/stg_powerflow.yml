@@ -1,0 +1,26 @@
+version: 2
+models:
+- name: stg_appsflyer
+  description: Bereinigte Marketingdaten von AppsFlyer
+  columns:
+  - name: device_id
+    description: Eindeutige Geräte-ID für das Marketing-Attribution-Mapping
+    data_tests:
+    - not_null
+    - unique
+- name: stg_google_ads
+  description: Bereinigte Marketingdaten von Google Ads
+  columns:
+  - name: device_id
+    description: Eindeutige Geräte-ID aus den Google Ads Kampagnen
+    data_tests:
+    - not_null
+    - unique
+- name: stg_registrations
+  description: Bereinigte Registrierungsdaten ohne unvollständige Profile
+  columns:
+  - name: user_id
+    description: Die bereinigte, eindeutige ID des Nutzers
+    data_tests:
+    - not_null
+    - unique

@@ -1,0 +1,32 @@
+version: 2
+models:
+- name: ltv
+  description: Berechnet die kumulierten täglichen Umsätze pro Nutzer basierend auf der Nutzungsdauer ab Registrierungsdatum.
+  columns:
+  - name: reg_date
+    description: Das erste erfasste Registrierungsdatum des Benutzers.
+    data_tests:
+    - not_null
+  - name: transaction_date
+    description: Das kalendarische Datum einer getätigten In-App-Transaktion.
+    data_tests:
+    - not_null
+- name: marketing_attribution
+  description: Zusammengeführter Datensatz, der alle Marketing-Kanäle und Kampagnenkosten von Google Ads und AppsFlyer konsolidiert.
+  columns:
+  - name: device_id
+    description: Die eindeutige Geräte-ID zur geräteübergreifenden Wiedererkennung.
+    data_tests:
+    - not_null
+    - unique
+  - name: attribution_cost
+    description: Die spezifischen Kosten für die Nutzerakquise der jeweiligen Kampagne.
+    data_tests:
+    - not_null
+- name: registrations_clean
+  description: Dieses Modell filtert Nutzer heraus, die die Registrierung nicht abgeschlossen haben (unvollständige Profile).
+  columns:
+  - name: user_id
+    description: Die eindeutige, bereinigte ID des Nutzers (Primärschlüssel).
+    data_tests:
+    - unique

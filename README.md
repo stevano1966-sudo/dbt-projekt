@@ -11,6 +11,8 @@ dbt-Projekt für Snowflake (dbt Cloud), Ersteller: Milomir Stevanovic.
 - `seeds/powerflow/campaign_cost.csv`: Kampagnenkosten
 
 ## Ausführen
+
+```bash
 dbt deps
-dbt seed
 dbt build
+```

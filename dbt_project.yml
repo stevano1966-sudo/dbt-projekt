@@ -46,9 +46,11 @@ models:
     # --------------------------------------------------------------------------
     # Silver Screen
     # Ordnerpfad: models/silver_screen/
-    # Ziel-Schema in der Datenbank: <profile_schema>_silver_screen
+    # Ziel-Datenbank: SILVER_SCREEN_DB
+    # Ziel-Schema: DEV_/PROD_ + BRONZE / SILVER / GOLD (über Makro generate_schema_name)
     # --------------------------------------------------------------------------
     silver_screen:          # Entspricht models/silver_screen/
+      +database: SILVER_SCREEN_DB # Überschreibt die Standard-Datenbank für silver_screen
       staging:
         +schema: bronze     # Weist das Schema bronze zu
         +materialized: view # Materialisiert das Modell als View

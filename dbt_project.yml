@@ -48,6 +48,7 @@ models:
     # Ordnerpfad: models/silver_screen/
     # Ziel-Datenbank: SILVER_SCREEN_DB
     # Ziel-Schema: DEV_/PROD_ + BRONZE / SILVER / GOLD (über Makro generate_schema_name)
+    # 11.10.2026 - +database für silver_screen ergänzt
     # --------------------------------------------------------------------------
     silver_screen:          # Entspricht models/silver_screen/
       +database: SILVER_SCREEN_DB # Überschreibt die Standard-Datenbank für silver_screen
